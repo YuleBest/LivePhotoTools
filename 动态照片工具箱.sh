@@ -50,28 +50,37 @@ logx() {
 }
 # < 初始化函数 >
 toInitialize() {
+    # 关闭link提示
+    export LD_WARN=0
+    # 先设置环境变量，避免兼容性问题
     export PATH=/product/bin:/apex/com.android.runtime/bin:/apex/com.android.art/bin:/system_ext/bin:/system/bin:/system/xbin:/odm/bin:/vendor/bin:/vendor/xbin
-    
-    scriptPath=$(readlink -f "$0")
-    echo "当前脚本的绝对路径是：$scriptPath"
-    cd $(dirname ${scriptPath})
-    
-    mkdir -p "./输出文件"
-    # 检查文件完整性
-    # if [ ! -f $filesList ]; then
-        # ee "${bre}文件不完整，请检查是否完全解压文件。${ba}"
-        # ee "(缺少文件: ${filesList})"
-        # exit 1
-    # fi
-    # 移动文件并设置权限
-    ee "${ye}创建目录 $toolsTrue${ba}"; mkdir -p $toolsTrue
-    
-    echo "当前工作路径: $PWD"
-    
-    ee "${ye}复制工具${ba}"; cp "${PWD}/yule/tools/exiftool" "${toolsTrue}/"; cp "./yule/tools/perl" "${toolsTrue}/"; cp "./yule/tools/ffmpeg" "${toolsTrue}/"
-    ee "${ye}设置权限${ba}"; chmod 777 ${toolsTrue}/*
-    ee "${ye}设置环境 $toolsTrue${ba}"; export PATH=$PATH:$toolsTrue
-    ee "${ye}初始化完毕${ba}"
+    # 文件列表路径
+    filelist="./yule/tools/filelist"
+    newFilelist="/data/local/tmp/current_filelist.txt"
+    # 生成现在的filelist
+    find /data/local/tmp/livephototools/ -type f -print > $newFilelist
+    # 比较文件列表
+    if cmp -s $filelist $newFilelist; then
+      ee "${bgr}所有文件验证完成，无异常${ba}"
+      rm -f $newFilelist
+    else
+      ee "${bye}有文件缺失，进行初始化~请稍等${ba}"
+      # 初始化
+      ee "${ye}开始初始化，马上就好...${ba}"
+      sleep 2
+      . ./yule/main/initialize.sh
+      ee "${bgr}初始化完毕，正在重启工具...${ba}"
+      sleep 2
+      # 重新cd回根目录
+      cd ${fatherDir}
+      # 重新启动，初始化完成
+      . ./动态照片工具箱.sh
+      exit 0
+    fi
+    # 然后我们要设置环境变量以使用exiftool和ffmpeg
+    export PATH=$PATH:/data/local/tmp/livephototools/bin
+    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/data/local/tmp/livephototools/lib
+    export PERL5LIB=/data/local/tmp/livephototools/lib/perl5:/data/local/tmp/livephototools/lib/perl5/site_perl/5.38.2
 }
 # < 选择系统 >
 choiceOS() {
@@ -146,6 +155,8 @@ elif [[ $fun == 'u' ]]; then
 elif [[ $fun == 'd' ]]; then
     echo '' > ./yule/record/defaultOS
     sh ./动态照片工具箱.sh
+elif [[ $fun == 'test' ]]; then
+    . ./yule/main/initialize.sh
 else
     ee "${bre}输入错误，能不能检查下再回车啊喂! ￣△￣||${ba}"
 fi
