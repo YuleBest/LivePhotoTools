@@ -1,5 +1,5 @@
 #!/bin/bash
-versionYule='V2.0'
+versionYule='V2.1'
 
 # ************************************************
 
@@ -56,31 +56,23 @@ toInitialize() {
     export PATH=/product/bin:/apex/com.android.runtime/bin:/apex/com.android.art/bin:/system_ext/bin:/system/bin:/system/xbin:/odm/bin:/vendor/bin:/vendor/xbin
     # 文件列表路径
     filelist="./yule/tools/filelist"
-    newFilelist="/data/local/tmp/current_filelist.txt"
-    # 生成现在的filelist
-    find /data/local/tmp/livephototools/ -type f -print > $newFilelist
-    # 比较文件列表
-    if cmp -s $filelist $newFilelist; then
-      ee "${bgr}所有文件验证完成，无异常${ba}"
-      rm -f $newFilelist
-    else
-      ee "${bye}有文件缺失，进行初始化~请稍等${ba}"
-      # 初始化
-      ee "${ye}开始初始化，马上就好...${ba}"
-      sleep 2
-      . ./yule/main/initialize.sh
-      ee "${bgr}初始化完毕，正在重启工具...${ba}"
-      sleep 2
-      # 重新cd回根目录
-      cd ${fatherDir}
-      # 重新启动，初始化完成
-      . ./动态照片工具箱.sh
-      exit 0
-    fi
+        
     # 然后我们要设置环境变量以使用exiftool和ffmpeg
     export PATH=$PATH:/data/local/tmp/livephototools/bin
     export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/data/local/tmp/livephototools/lib
     export PERL5LIB=/data/local/tmp/livephototools/lib/perl5:/data/local/tmp/livephototools/lib/perl5/site_perl/5.38.2
+
+    requiredToolsList=("exiftool" "perl" "sed" "ffmpeg")
+    for tool in "${requiredToolsList[@]}"; do
+    echo -n "\r--- 检查 [$tool]..."
+    sleep 0.1
+        if ! command -v "$tool" &> /dev/null; then
+            ee "\n${re}-- 工具 [$tool] 没有被安装，请先去安装${res}"
+            ee "${ye}开始初始化，马上就好...${ba}"
+            . ./yule/main/initialize.sh
+            exit 1
+        fi
+    done # 检查使用到的工具是否安装
 }
 # < 选择系统 >
 choiceOS() {
