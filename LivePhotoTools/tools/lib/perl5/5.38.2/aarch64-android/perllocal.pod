@@ -1,0 +1,22 @@
+=head2 Sun Dec 29 21:45:29 2024: C<Module> L<Image::ExifTool|Image::ExifTool>
+
+=over 4
+
+=item *
+
+C<installed into: /data/data/com.termux/files/usr/lib/perl5/site_perl/5.38.2>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 13.10>
+
+=item *
+
+C<EXE_FILES: exiftool>
+
+=back
+
