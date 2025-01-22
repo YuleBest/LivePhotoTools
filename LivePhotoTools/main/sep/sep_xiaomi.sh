@@ -92,10 +92,13 @@ processFile() {
     ee "${ye}开始提取...${res}"
     
     ee "- 开始提取静态图片"
-    dd if="$file" of="${outputFileDir}/image.jpg" count="$staticSize" bs=1
+    dd if="$file" of="${outputFileDir}/image.jpg" count="$staticSize" bs=1 > /dev/null
+    
+    # 删除有关动态照片的标签
+    exiftool -overwrite_original -all="" "${outputFileDir}/image.jpg"
     
     ee "- 静态图片提取完成，开始提取视频"
-    dd if="$file" of="${outputFileDir}/video.mp4" skip="$staticSize" count="$videoOffset" bs=1
+    dd if="$file" of="${outputFileDir}/video.mp4" skip="$staticSize" count="$videoOffset" bs=1 > /dev/null
     
     ee "${gr}$(basename "$file") | 提取完毕${res}"
     okeyNum=$(expr $okeyNum + 1)

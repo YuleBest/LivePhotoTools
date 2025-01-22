@@ -55,20 +55,27 @@ EOF
 
 # 获取用户输入
 getInput() {
-    ee "${bye}请输入静态图片路径${res}"
+    ee "${bye}- 请输入静态图片路径${res}"
     read staticImage
-    if [[ ! -f $staticImage ]]; then
-        ee "${bre}文件 $staticImage 不存在，请重新运行脚本并输入正确路径。${res}"
+    if [[ ! -f "$staticImage" ]]; then
+        ee "${bre}x 文件 $staticImage 不存在，请重新运行脚本并输入正确路径。${res}"
         exit 1
     fi
     staticImageBasename="$(basename ${staticImage})"
-    cp $staticImage $HOME
+    cp "$staticImage" $HOME
     staticImage="$HOME/${staticImageBasename}"
+    
+    # 检查用户选择的图片是否为动态照片，如果是则拦截
+    videoOffset="$(exiftool -MicroVideoOffset "$staticImage" | awk -F: '{ $1=""; print $0 }' | sed 's/^[ \t]*//')"
+    if [ "$videoOffset" != '' ] || [ ! -z "$videoOffset" ]; then
+        ee "${bye}x 你选择的照片可能是一张动态照片，请选择静态图片，或先进行拆分后再合成${res}"
+        exit 1
+    fi
 
-    ee "${bye}请输入视频路径${res}"
+    ee "${bye}- 请输入视频路径${res}"
     read videoFile
     if [[ ! -f $videoFile ]]; then
-        ee "${bre}文件 $videoFile 不存在，请重新运行脚本并输入正确路径。${bre}"
+        ee "${bre}x 文件 $videoFile 不存在，请重新运行脚本并输入正确路径。${bre}"
         exit 1
     fi
     videoFileBasename="$(basename ${videoFile})"

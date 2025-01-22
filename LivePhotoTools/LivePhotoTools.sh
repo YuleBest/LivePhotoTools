@@ -1,5 +1,5 @@
 #!/bin/bash
-versionYule='V2.2'
+versionYule='V2.3'
 
 # ************************************************
 
@@ -25,20 +25,6 @@ bye='\033[43m'
 bgr='\033[42m'
 res='\033[0m'
 
-#  环境
-cp ${fatherDir}/tools/bin/yq ${HOME}/yq
-chmod 777 ${HOME}/yq
-toolsTrue="$(${HOME}/yq '.ToolTmp' "${fatherDir}/Config.yaml")"
-OS=$(${HOME}/yq '.OS' "${fatherDir}/Config.yaml")
-
-if [ $toolsTrue = 'HOME' ]; then
-    toolsTrue=${HOME}
-elif [ ! -d $toolsTrue ]; then
-    ee "${re}- 指定的 '工具释放目录' 不存在于设备上 ($toolsTrue)${res}"
-    ee "解决方法: 前往 'Config.yaml' 配置正确的工具释放目录"
-    exit 1
-fi
-
 #  echo -e 快捷函数
 ee() {
     echo -e " $1"
@@ -54,15 +40,32 @@ logr() {
 logx() {
     echo "$(date +'%Y-%m-%d %H:%M:%S.%N') | 退出工具。" >> $logFile
 }
+
+# 检查环境是否有错误
+if [ "$(basename "$HOME")" != "home" ] && [ "$(basename "$HOME")" != "term" ] || [ ! "$HOME" ]; then
+    ee "${re}- HOME 路径错误，请不要使用系统环境来执行 ($(basename $(dirname "$HOME")))${res}"
+    ee "错误示范: /bin/sh 本工具"
+    ee "正确示范: bash 本工具，或使用 MT 扩展包选项"
+    exit 1
+fi
+
+#  使用 yq 读取配置文件
+cp ${fatherDir}/tools/bin/yq ${HOME}/yq
+chmod 777 ${HOME}/yq
+toolsTrue="$(${HOME}/yq '.ToolTmp' "${fatherDir}/Config.yaml")"
+OS=$(${HOME}/yq '.OS' "${fatherDir}/Config.yaml")
+
+if [ $toolsTrue = "HOME" ]; then
+    toolsTrue=${HOME}
+elif [ ! -d $toolsTrue ]; then
+    ee "${re}- 指定的 '工具释放目录' 不存在于设备上 ($toolsTrue)${res}"
+    ee "解决方法: 前往 'Config.yaml' 配置正确的工具释放目录"
+    exit 1
+fi
+
 #  初始化函数
 toInitialize() {
-    # 关闭link提示
-    export LD_WARN=0
-    # 然后我们要设置环境变量以使用exiftool和ffmpeg
-    export PATH=$PATH:$toolsTrue/livephototools/bin
-    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$toolsTrue/livephototools/lib
-    # PERL5LIB=$toolsTrue/livephototools/lib/perl5 $toolsTrue/livephototools/lib/perl5/site_perl/5.38.2
-    requiredToolsList="exiftool perl sed ffmpeg yq"
+    requiredToolsList="exiftool awk sed ffmpeg yq"
     for tool in $requiredToolsList; do
     ee "--- 检查 [$tool]..."
     sleep 0.1
@@ -78,8 +81,8 @@ toInitialize() {
 }
 
 # 设置环境变量
-export PATH=$PATH:$toolsTrue/livephototools/bin
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$toolsTrue/livephototools/lib
+export PATH=$toolsTrue/livephototools/bin:${PATH}
+export LD_LIBRARY_PATH=$toolsTrue/livephototools/lib:${LD_LIBRARY_PATH}
 # PERL5LIB=$toolsTrue/livephototools/lib/perl5 $toolsTrue/livephototools/lib/perl5/site_perl/5.38.2
 
 #  选择系统
@@ -92,7 +95,7 @@ OSCho() {
     fi
 }
 
-# [ 初始化与选择功能模块和系统 ] ********************************
+# [ 初始化与选择功能 ] ********************************
 
 echo -e "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 toInitialize
