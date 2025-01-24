@@ -50,7 +50,7 @@ if [ "$(basename "$HOME")" != "home" ] && [ "$(basename "$HOME")" != "term" ] ||
 fi
 
 #  使用 yq 读取配置文件
-cp ${fatherDir}/tools/bin/yq ${HOME}/yq
+cp ${fatherDir}/tools/bin/$(uname -m)/yq ${HOME}/yq
 chmod 777 ${HOME}/yq
 toolsTrue="$(${HOME}/yq '.ToolTmp' "${fatherDir}/Config.yaml")"
 OS=$(${HOME}/yq '.OS' "${fatherDir}/Config.yaml")

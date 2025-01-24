@@ -8,7 +8,7 @@
 newDir="$toolsTrue/livephototools"
 toolsDir="${fatherDir}/tools"
 
-# 首先需要确认路径...
+# 确认路径...
 ee "开始初始化..."
 
 # 先删除原目录...
@@ -18,6 +18,16 @@ rm -rf ${newDir}
 ee "新建目录..."
 mkdir -p ${newDir}/bin
 mkdir -p ${newDir}/lib
+
+# 加入设置文件路径，便于以后适配其他架构
+case $(uname -m) in
+    aarch64)
+        toolsDir="$toolsDir/aarch64"
+        ;;
+   *)
+        ee "${re}我们还没有适配你的 CPU 架构: $(uname -m)${res}"
+        exit 1
+esac
 
 # 复制文件
 ee "复制文件..."
