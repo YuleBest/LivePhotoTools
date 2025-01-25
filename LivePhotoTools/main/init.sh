@@ -5,6 +5,11 @@
 # ${fatherDir}/yule/tools 是存放工具的目录
 # ${newDir} 是后续读取的工具路径
 
+if [[ $versionYule == '' ]]; then
+    echo "请运行脚本根目录的'动态照片工具箱.sh'。"
+    exit 1
+fi
+
 newDir="$toolsTrue/livephototools"
 toolsDir="${fatherDir}/tools"
 

@@ -5,6 +5,7 @@ if [[ $versionYule == '' ]]; then
     echo "请运行脚本根目录的'动态照片工具箱.sh'。"
     exit 1
 fi
+
 cd ${fatherDir}/main
 
 # 查看信息功能
@@ -12,7 +13,7 @@ info() {
     ee "${ye}"
     ee "********************************"
     ee "动态照片工具箱 - 查看信息"
-    ee "---- $versionYule - $OS"
+    ee "---- V$versionYule - $OS"
     ee "By Yule"
     ee "********************************"
     ee "${res}"
@@ -24,7 +25,7 @@ sep() {
     ee "${ye}"
     ee "********************************"
     ee "动态照片工具箱 - 拆分"
-    ee "---- $versionYule - $OS"
+    ee "---- V$versionYule - $OS"
     ee "By Yule"
     ee "********************************"
     ee "${res}"
@@ -60,7 +61,7 @@ syn() {
     ee "${ye}"
     ee "********************************"
     ee "动态照片工具箱 - 合成"
-    ee "---- $versionYule"
+    ee "---- V$versionYule"
     ee "By Yule"
     ee "********************************"
     ee "${res}"

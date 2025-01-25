@@ -1,5 +1,5 @@
 #!/bin/bash
-versionYule='V2.3'
+versionYule='2.3'
 
 # ************************************************
 
@@ -50,7 +50,7 @@ if [ "$(basename "$HOME")" != "home" ] && [ "$(basename "$HOME")" != "term" ] ||
 fi
 
 #  使用 yq 读取配置文件
-cp ${fatherDir}/tools/bin/$(uname -m)/yq ${HOME}/yq
+cp ${fatherDir}/tools/$(uname -m)/bin/yq ${HOME}/yq
 chmod 777 ${HOME}/yq
 toolsTrue="$(${HOME}/yq '.ToolTmp' "${fatherDir}/Config.yaml")"
 OS=$(${HOME}/yq '.OS' "${fatherDir}/Config.yaml")
@@ -87,7 +87,7 @@ export LD_LIBRARY_PATH=$toolsTrue/livephototools/lib:${LD_LIBRARY_PATH}
 
 #  选择系统
 OSCho() {
-    br; br
+    br
     if [ -z "$OS" ] || [ "$OS" = "null" ] || ( [ "$OS" != "MIUI/HyperOS" ] && [ "$OS" != "ColorOS" ] ); then
         ee "${re}- 默认系统未设置或设置错误 ($OS)${res}"
         ee "- 解决方法: 前往 'Config.yaml' 配置正确的 'OS'"
@@ -105,7 +105,7 @@ echo -e "━━━━━━━━━━━━━━━━━━━━━━━�
 ee "${gr}"
 ee "********************************"
 ee "动态照片工具箱 / Live Photo Tools"
-ee "---- $versionYule - $OS"
+ee "---- V$versionYule - $OS"
 ee "By Yule"
 ee "********************************"
 ee "${res}"
@@ -115,6 +115,7 @@ ee "[a] 合成静态图片和视频为动态照片(测试版)"
 ee "[b] 拆分动态图片为静态图片和视频"
 # ee "[c] 对不同系统的动态图片进行转换"
 ee "[d] 查看照片 Exif/Xmp 信息"
+ee "[e] 检查更新"
 read fun
 echo -e "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -126,8 +127,12 @@ elif [[ $fun == 'b' ]]; then
     # . ${fatherDir}/main/tra.sh
 elif [[ $fun == 'd' ]]; then
     . "${fatherDir}/main/main.sh" "info"
+elif [[ $fun == 'e' ]]; then
+    . "${fatherDir}/tools/update.sh"
+    . "${fatherDir}/LivePhotoTools.sh"
+    exit 0
 elif [[ $fun == 'init' ]]; then
-    . ${fatherDir}/main/init.sh
+    . "${fatherDir}/main/init.sh"
 else
     ee "${bre}输入错误，能不能检查下再回车啊喂! ￣△￣||${res}"
 fi
